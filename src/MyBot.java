@@ -13,9 +13,9 @@ public class MyBot {
     // starting point, or you can throw it out entirely and replace it with
     // your own. Check out the tutorials and articles on the contest website at
     // http://www.ai-contest.com/resources.
-    public static void DoTurn(PlanetWars pw) {
-        Uniform_cost uc = new Uniform_cost(pw);
-
+    public static void DoTurn(PlanetWars pw, float val) {
+        System.exit(-234567654);
+        Uniform_cost uc = new Uniform_cost(pw, val);
         Node result = uc.search();
         if(result.first_Turn != null){
             for(Attack attack : result.first_Turn.attacks){
@@ -27,7 +27,7 @@ public class MyBot {
 
 
     public static void main(String[] args) {
-
+        // Errorfile:
         File file = new File("err.txt");
         try {
             FileOutputStream p = new FileOutputStream(file);
@@ -38,6 +38,10 @@ public class MyBot {
             System.exit(-1);
         }
         int turn = 1;
+
+        // Start selflearning mechanism:
+        Selflearning sl = new Selflearning();
+        float val = sl.getGoalTestValue();
 
 
         String line = "";
@@ -54,7 +58,7 @@ public class MyBot {
                             System.err.println("\nturn " + turn + " :");
                             //System.err.println(pw.gamestateString);
                             try {
-                                DoTurn(pw);
+                                DoTurn(pw, val);
                             } catch (Exception e) {
                                 System.err.println(pw.gamestateString);
                                 System.err.println("caught exception");

@@ -34,7 +34,7 @@ public class Test {
         PlanetWars pw = new PlanetWars(input);
         long time = System.currentTimeMillis();
 
-        Uniform_cost uc = new Uniform_cost(pw);
+        Uniform_cost uc = new Uniform_cost(pw, 1.05);
         Node ans = uc.search();
         System.out.println(ans.depth);
 
