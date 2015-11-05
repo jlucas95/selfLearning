@@ -73,12 +73,18 @@ public class PlanetWars implements Cloneable {
     public boolean arrival(){
         List<Fleet> fleets = new ArrayList<>();
         boolean arrival = false;
-        for (Fleet fleet : Fleets()) {
-            arrival = true;
-            fleets.add(fleet);
+
+        if(Fleets().size() == 0){
+            return true;
         }
 
+        for (Fleet fleet : Fleets()) {
+            if(fleet.TurnsRemaining() == 0){
+                arrival = true;
+                fleets.add(fleet);
+            }
 
+        }
         fleets.forEach(fleet -> {
             Planet dest = GetPlanet(fleet.DestinationPlanet());
             if(fleet.Owner()!= dest.Owner()){
@@ -96,7 +102,7 @@ public class PlanetWars implements Cloneable {
         return arrival;
     }
 
-    public Float value_myself(){
+    /*public Float value_myself(){
 
         int my_planets = MyPlanets().size();
         int enemy_planets = EnemyPlanets().size();
@@ -121,6 +127,7 @@ public class PlanetWars implements Cloneable {
                 enemy_ships += fleet.NumShips();
             }
         }
+
 
         for(Planet planet : Planets()){
             if(planet.Owner() == 1){
@@ -155,6 +162,18 @@ public class PlanetWars implements Cloneable {
             ship_value = my_ships;
         }
         float value = ship_value + planet_value + growth_value;
+        return value;
+    }*/
+
+    public float value_myself(){
+        //int myships = this.NumShips(1);
+        //int myplanets = this.NumPlanets();
+        int mygrowth = 0;
+        float value;
+        for(Planet planet : MyPlanets()){
+            mygrowth += planet.GrowthRate();
+        }
+        value = (float) mygrowth;
         return value;
     }
 
@@ -518,17 +537,42 @@ public class PlanetWars implements Cloneable {
         Collections.sort(nmp, new Comparator<Planet>() {
             @Override
             public int compare(Planet a, Planet b) {
-                // Ascending order:
-                return a.NumShips() < b.NumShips() ? -1 : a.NumShips() == b.NumShips() ? 0 : 1;
+                // Descending order:
+                return a.NumShips() > b.NumShips() ? -1 : a.NumShips() == b.NumShips() ? 0 : 1;
             }
         });
 
+        int j = 1;
+        boolean done = false;
+        while (!done){
+            if(fleet_already_sent(nmp.get(nmp.size()-j))){
+                nmp.remove(nmp.size() - j);
+                j = 1;
+            }
+            else{
+                j++;
+                if(j > 4){
+                    done = true;
+                }
+            }
+        }
+
         // Get the {limit} planets with largest nr of ships:
-        for (int i = 0; i < limit ; i++) {
-            fp.add(nmp.get(i));
+        for (int i = 1; i < limit ; i++) {
+            fp.add(nmp.get(nmp.size()-i));
         }
         return fp;
 
+    }
+
+    private boolean fleet_already_sent(Planet destination) {
+        List<Fleet> fleets = Fleets();
+        for (Fleet fleet : fleets) {
+            if (fleet.DestinationPlanet() == destination.PlanetID() && fleet.Owner() == 1) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public PlanetWars clone(){return new PlanetWars(this);}
